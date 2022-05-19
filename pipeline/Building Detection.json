@@ -20,7 +20,7 @@
 			},
 			"BatchJobName": {
 				"type": "string",
-				"defaultValue": "black-shark-model-job"
+				"defaultValue": "building-detection-model-job.json"
 			},
 			"BatchLocation": {
 				"type": "string",
