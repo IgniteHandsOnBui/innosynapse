@@ -1,0 +1,37 @@
+{
+	"name": "Building Detection",
+	"properties": {
+		"parameters": {
+			"Prefix": {
+				"type": "string",
+				"defaultValue": "innosyn"
+			},
+			"StorageAccountName": {
+				"type": "string",
+				"defaultValue": "rawdatajbqezt"
+			},
+			"AOI": {
+				"type": "string",
+				"defaultValue": "-117.063550 32.749467 -116.999386 32.812946"
+			},
+			"BatchAccountName": {
+				"type": "string",
+				"defaultValue": "innosynorcbatchact"
+			},
+			"BatchJobName": {
+				"type": "string",
+				"defaultValue": "black-shark-model-job"
+			},
+			"BatchLocation": {
+				"type": "string",
+				"defaultValue": "southcentralus"
+			}
+		},
+		"variables": {
+			"Storage_Account_Conn_String": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
