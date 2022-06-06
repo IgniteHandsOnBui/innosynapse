@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e751751c-6b52-4dbd-9109-82f83c2a4b0a"
+				"spark.autotune.trackingId": "8ba37317-c210-4859-b424-3ec34ccfb74e"
 			}
 		},
 		"metadata": {
@@ -98,15 +98,7 @@
 					}
 				},
 				"source": [
-					"#Store GeoTiff images in Azure Data Lake Storage\r\n",
-					"import shutil\r\n",
-					"import sys\r\n",
-					"from osgeo import gdal\r\n",
-					"from notebookutils import mssparkutils\r\n",
-					"options = gdal.WarpOptions(options=['tr'], xRes=1000, yRes=1000)\r\n",
-					"gdal.Warp('dst_img.tif', '/vsiadls/innosyn/raw/sample_4326.tif', options=options)\r\n",
-					"jobId = mssparkutils.env.getJobId()\r\n",
-					"shutil.copy(\"dest_image.tif\", f\"/synfs/{jobId}/innosyn/raw/dest_image.tif\")"
+					""
 				],
 				"execution_count": 32
 			}
