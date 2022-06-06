@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "06463c21-f53e-4d21-873c-99bd9c94a682"
+				"spark.autotune.trackingId": "e751751c-6b52-4dbd-9109-82f83c2a4b0a"
 			}
 		},
 		"metadata": {
@@ -41,8 +41,8 @@
 				},
 				"sparkVersion": "3.1",
 				"nodeCount": 10,
-				"cores": 4,
-				"memory": 28,
+				"cores": 8,
+				"memory": 56,
 				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
@@ -51,9 +51,64 @@
 			{
 				"cell_type": "code",
 				"source": [
-					"from osgeo import gdal"
+					"#Print information from the raster data\r\n",
+					"from osgeo import gdal  \r\n",
+					"gdal.UseExceptions()\r\n",
+					"access_key = TokenLibrary.getSecret('innosyn-pipeline-kv','GeospatialStorageAccountKey')\r\n",
+					"gdal.SetConfigOption('AZURE_STORAGE_ACCOUNT', 'rawdatajbqezt')\r\n",
+					"gdal.SetConfigOption('AZURE_STORAGE_ACCESS_KEY', access_key)  \r\n",
+					"dataset_info = gdal.Info('/vsiadls/innosyn/raw/sample_4326.tif')  #/vsiadls/<container_name>/path/to/image\r\n",
+					"print(dataset_info)"
 				],
-				"execution_count": 1
+				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#Convert GeoTiff to PNG by using GDAL\r\n",
+					"tiff_in = \"/vsiadls/innosyn/raw/sample_4326.tif\"\r\n",
+					"png_out = \"/vsiadls/innosyn/raw/sample_image.png\"\r\n",
+					"options = gdal.TranslateOptions(format='PNG')\r\n",
+					"gdal.Translate(png_out, tiff_in, options=options)"
+				],
+				"execution_count": 10
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#Store GeoTiff images in Azure Data Lake Storage\r\n",
+					"import shutil\r\n",
+					"import sys\r\n",
+					"from osgeo import gdal\r\n",
+					"from notebookutils import mssparkutils\r\n",
+					"options = gdal.WarpOptions(options=['tr'], xRes=1000, yRes=1000)\r\n",
+					"gdal.Warp('dst_img.tif', '/vsiadls/innosyn/raw/sample_4326.tif', options=options)\r\n",
+					"jobId = mssparkutils.env.getJobId()\r\n",
+					"shutil.copy(\"dest_image.tif\", f\"/synfs/{jobId}/innosyn/raw/dest_image.tif\")"
+				],
+				"execution_count": 32
 			}
 		]
 	}

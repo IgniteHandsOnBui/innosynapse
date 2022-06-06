@@ -30,7 +30,7 @@
 				}
 			},
 			{
-				"name": "Gpkg to Geojson",
+				"name": "Convert to Geojson",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"userProperties": [],
