@@ -1,44 +1,6 @@
 {
 	"name": "Blackshark Model Flow",
 	"properties": {
-		"activities": [
-			{
-				"name": "Get Data",
-				"type": "ExecutePipeline",
-				"dependsOn": [],
-				"userProperties": [],
-				"typeProperties": {
-					"waitOnCompletion": true
-				}
-			},
-			{
-				"name": "Blackshark Model Transforms",
-				"type": "ExecutePipeline",
-				"dependsOn": [],
-				"userProperties": [],
-				"typeProperties": {
-					"waitOnCompletion": true
-				}
-			},
-			{
-				"name": "Blackshark Building Detection",
-				"type": "ExecutePipeline",
-				"dependsOn": [],
-				"userProperties": [],
-				"typeProperties": {
-					"waitOnCompletion": true
-				}
-			},
-			{
-				"name": "Convert to Geojson",
-				"type": "ExecutePipeline",
-				"dependsOn": [],
-				"userProperties": [],
-				"typeProperties": {
-					"waitOnCompletion": true
-				}
-			}
-		],
 		"parameters": {
 			"Prefix": {
 				"type": "string",
