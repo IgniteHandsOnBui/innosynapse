@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "8ba37317-c210-4859-b424-3ec34ccfb74e"
+				"spark.autotune.trackingId": "7e70213e-cf73-40c9-b238-3696b9245473"
 			}
 		},
 		"metadata": {
@@ -60,7 +60,7 @@
 					"dataset_info = gdal.Info('/vsiadls/innosyn/raw/sample_4326.tif')  #/vsiadls/<container_name>/path/to/image\r\n",
 					"print(dataset_info)"
 				],
-				"execution_count": 9
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -82,7 +82,7 @@
 					"options = gdal.TranslateOptions(format='PNG')\r\n",
 					"gdal.Translate(png_out, tiff_in, options=options)"
 				],
-				"execution_count": 10
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -98,9 +98,13 @@
 					}
 				},
 				"source": [
-					""
+					"import rasterio\r\n",
+					"from matplotlib import pyplot\r\n",
+					"src = rasterio.open(\"https://rawdatajbqezt.blob.core.windows.net/innosyn/raw/sample_4326.tif?sp=r&st=2022-06-07T03:07:33Z&se=2022-06-07T11:07:33Z&spr=https&sv=2020-08-04&sr=b&sig=TCTLE92hLrleXJXVk2JhWzvseSj1tNPMYgcUiCOoPow%3D\")\r\n",
+					"pyplot.imshow(src.read(1))\r\n",
+					"pyplot.show()"
 				],
-				"execution_count": 32
+				"execution_count": 6
 			}
 		]
 	}
