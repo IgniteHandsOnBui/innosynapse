@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "7e70213e-cf73-40c9-b238-3696b9245473"
+				"spark.autotune.trackingId": "499b8569-67c4-4c74-b7ec-a6977737caea"
 			}
 		},
 		"metadata": {
@@ -60,7 +60,7 @@
 					"dataset_info = gdal.Info('/vsiadls/innosyn/raw/sample_4326.tif')  #/vsiadls/<container_name>/path/to/image\r\n",
 					"print(dataset_info)"
 				],
-				"execution_count": null
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
@@ -82,7 +82,45 @@
 					"options = gdal.TranslateOptions(format='PNG')\r\n",
 					"gdal.Translate(png_out, tiff_in, options=options)"
 				],
-				"execution_count": null
+				"execution_count": 11
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#Store geotif image in Azure Data Lake Storage\r\n",
+					"import shutil\r\n",
+					"import sys\r\n",
+					"from osgeo import gdal\r\n",
+					"from notebookutils import mssparkutils\r\n",
+					"\r\n",
+					"mssparkutils.fs.mount( \r\n",
+					"\t\"abfss://innosyn@rawdatajbqezt.dfs.core.windows.net\", \r\n",
+					"\t\"/test2\", \r\n",
+					"\t{\"linkedService\":\"innosyn_ajvt_linked_service\"} \r\n",
+					"  )\r\n",
+					"\r\n",
+					"#gdal.SetConfigOption('AZURE_STORAGE_ACCOUNT', 'rawdatajbqezt')\r\n",
+					"#gdal.SetConfigOption('AZURE_STORAGE_ACCESS_KEY', access_key)\r\n",
+					"\r\n",
+					"options = gdal.WarpOptions(options=['tr'], xRes=1000, yRes=1000)\r\n",
+					"gdal.Warp('dest_image.tif', '/vsiadls/innosyn/raw/sample_4326.tif', options=options)\r\n",
+					"\r\n",
+					"jobId = mssparkutils.env.getJobId()\r\n",
+					"\r\n",
+					"shutil.copy(\"dest_image.tif\", f\"/synfs/{jobId}/test2/dest_image.tif\")"
+				],
+				"execution_count": 13
 			},
 			{
 				"cell_type": "code",
@@ -100,11 +138,29 @@
 				"source": [
 					"import rasterio\r\n",
 					"from matplotlib import pyplot\r\n",
-					"src = rasterio.open(\"https://rawdatajbqezt.blob.core.windows.net/innosyn/raw/sample_4326.tif?sp=r&st=2022-06-07T03:07:33Z&se=2022-06-07T11:07:33Z&spr=https&sv=2020-08-04&sr=b&sig=TCTLE92hLrleXJXVk2JhWzvseSj1tNPMYgcUiCOoPow%3D\")\r\n",
-					"pyplot.imshow(src.read(1))\r\n",
+					"src = rasterio.open(\"https://rawdatajbqezt.blob.core.windows.net/innosyn/raw/sample_4326.tif?sp=r&st=2022-06-07T13:45:32Z&se=2022-06-10T21:45:32Z&spr=https&sv=2020-08-04&sr=b&sig=K5Uf%2BMgKQwrIFhEChkNi0nk0CTbUT5cwG1jetJvkEoQ%3D\")\r\n",
+					"pyplot.imshow(src.read(1), cmap='pink')\r\n",
 					"pyplot.show()"
 				],
-				"execution_count": 6
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					""
+				],
+				"execution_count": null
 			}
 		]
 	}
