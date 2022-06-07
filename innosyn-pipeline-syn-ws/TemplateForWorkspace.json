@@ -23,6 +23,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'innosyn-pipeline-syn-ws-WorkspaceDefaultSqlServer'"
 		},
+		"innosyn_ajvt_linked_service_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'innosyn_ajvt_linked_service'"
+		},
 		"AOI Batch_properties_typeProperties_batchUri": {
 			"type": "string",
 			"defaultValue": "https://innosynorcbatchact.southcentralus.batch.azure.com"
@@ -46,6 +50,10 @@
 		"innosyn-pipeline-syn-ws-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://synhnsdl2xmc.dfs.core.windows.net/"
+		},
+		"innosyn_ajvt_linked_service_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://rawdatajbqezt.dfs.core.windows.net"
 		}
 	},
 	"variables": {
@@ -818,22 +826,28 @@
 				},
 				"parameters": {
 					"Prefix": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "innosyn"
 					},
 					"StorageAccountName": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "rawdatajbqezt"
 					},
 					"AOI": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "-117.063550 32.749467 -116.999386 32.812946"
 					},
 					"BatchAccountName": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "innosynorcbatchact"
 					},
 					"BatchJobName": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "custom-vision-model-job"
 					},
 					"BatchLocation": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "southcentralus"
 					}
 				},
 				"variables": {
@@ -1246,6 +1260,182 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/CheckInstalledPackage')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "Geospatialspark",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "893ab420-fee1-44f0-bc19-6b462954714a"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/251b3efb-f673-4fa5-a56e-e2f645fc33fa/resourceGroups/innosyn-pipeline-rg/providers/Microsoft.Synapse/workspaces/innosyn-pipeline-syn-ws/bigDataPools/Geospatialspark",
+						"name": "Geospatialspark",
+						"type": "Spark",
+						"endpoint": "https://innosyn-pipeline-syn-ws.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/Geospatialspark",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 8,
+						"memory": 56,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"#Print information from the raster data\r\n",
+							"from osgeo import gdal  \r\n",
+							"gdal.UseExceptions()\r\n",
+							"access_key = TokenLibrary.getSecret('innosyn-pipeline-kv','GeospatialStorageAccountKey')\r\n",
+							"gdal.SetConfigOption('AZURE_STORAGE_ACCOUNT', 'rawdatajbqezt')\r\n",
+							"gdal.SetConfigOption('AZURE_STORAGE_ACCESS_KEY', access_key)  \r\n",
+							"dataset_info = gdal.Info('/vsiadls/innosyn/raw/sample_4326.tif')  #/vsiadls/<container_name>/path/to/image\r\n",
+							"print(dataset_info)"
+						],
+						"outputs": [],
+						"execution_count": 10
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#Convert GeoTiff to PNG by using GDAL\r\n",
+							"tiff_in = \"/vsiadls/innosyn/raw/sample_4326.tif\"\r\n",
+							"png_out = \"/vsiadls/innosyn/raw/sample_image.png\"\r\n",
+							"options = gdal.TranslateOptions(format='PNG')\r\n",
+							"gdal.Translate(png_out, tiff_in, options=options)"
+						],
+						"outputs": [],
+						"execution_count": 11
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#Store geotif image in Azure Data Lake Storage\r\n",
+							"import shutil\r\n",
+							"import sys\r\n",
+							"from osgeo import gdal\r\n",
+							"from notebookutils import mssparkutils\r\n",
+							"\r\n",
+							"mssparkutils.fs.mount( \r\n",
+							"\t\"abfss://innosyn@rawdatajbqezt.dfs.core.windows.net\", \r\n",
+							"\t\"/test2\", \r\n",
+							"\t{\"linkedService\":\"innosyn_ajvt_linked_service\"} \r\n",
+							"  )\r\n",
+							"\r\n",
+							"#gdal.SetConfigOption('AZURE_STORAGE_ACCOUNT', 'rawdatajbqezt')\r\n",
+							"#gdal.SetConfigOption('AZURE_STORAGE_ACCESS_KEY', access_key)\r\n",
+							"\r\n",
+							"options = gdal.WarpOptions(options=['tr'], xRes=1000, yRes=1000)\r\n",
+							"gdal.Warp('dest_image.tif', '/vsiadls/innosyn/raw/sample_4326.tif', options=options)\r\n",
+							"\r\n",
+							"jobId = mssparkutils.env.getJobId()\r\n",
+							"\r\n",
+							"shutil.copy(\"dest_image.tif\", f\"/synfs/{jobId}/test2/dest_image.tif\")"
+						],
+						"outputs": [],
+						"execution_count": 13
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"import rasterio\r\n",
+							"from matplotlib import pyplot\r\n",
+							"src = rasterio.open(\"https://rawdatajbqezt.blob.core.windows.net/innosyn/raw/sample_4326.tif?sp=r&st=2022-06-07T13:45:32Z&se=2022-06-10T21:45:32Z&spr=https&sv=2020-08-04&sr=b&sig=K5Uf%2BMgKQwrIFhEChkNi0nk0CTbUT5cwG1jetJvkEoQ%3D\")\r\n",
+							"pyplot.imshow(src.read(1), cmap='pink')\r\n",
+							"pyplot.show()"
+						],
+						"outputs": [],
+						"execution_count": 3
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							""
+						],
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Copy noop')]",
 			"type": "Microsoft.Synapse/workspaces/sparkJobDefinitions",
 			"apiVersion": "2019-06-01-preview",
@@ -1372,6 +1562,59 @@
 			},
 			"dependsOn": [],
 			"location": "southcentralus"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Geospatialspark')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"autoPause": {
+					"enabled": true,
+					"delayInMinutes": 15
+				},
+				"autoScale": {
+					"enabled": true,
+					"maxNodeCount": 8,
+					"minNodeCount": 3
+				},
+				"nodeCount": 10,
+				"nodeSize": "Medium",
+				"nodeSizeFamily": "MemoryOptimized",
+				"sparkVersion": "3.1",
+				"libraryRequirements": {
+					"content": "name: aoi-env\r\nchannels:\r\n  - defaults\r\ndependencies:\r\n  - azure-storage-file-datalake\r\n  - gdal=3.3.0\r\n  - libgdal\r\n  - pip>=20.1.1\r\n  - pyproj\r\n  - shapely\r\n  - pip:\r\n      - \"rasterio\"\r\n      - \"geopandas\"",
+					"filename": "environment.yml",
+					"time": "2022-06-06T15:15:28.7036181Z"
+				},
+				"isComputeIsolationEnabled": false,
+				"sessionLevelPackagesEnabled": false,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "southcentralus"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/innosyn_ajvt_linked_service')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('innosyn_ajvt_linked_service_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('innosyn_ajvt_linked_service_accountKey')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
 		}
 	]
 }

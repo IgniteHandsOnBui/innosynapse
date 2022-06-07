@@ -17,6 +17,9 @@
 		"innosyn-pipeline-syn-ws-WorkspaceDefaultSqlServer_connectionString": {
 			"value": ""
 		},
+		"innosyn_ajvt_linked_service_accountKey": {
+			"value": ""
+		},
 		"AOI Batch_properties_typeProperties_batchUri": {
 			"value": "https://innosynorcbatchact.southcentralus.batch.azure.com"
 		},
@@ -34,6 +37,9 @@
 		},
 		"innosyn-pipeline-syn-ws-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"value": "https://synhnsdl2xmc.dfs.core.windows.net/"
+		},
+		"innosyn_ajvt_linked_service_properties_typeProperties_url": {
+			"value": "https://rawdatajbqezt.dfs.core.windows.net"
 		}
 	}
 }
