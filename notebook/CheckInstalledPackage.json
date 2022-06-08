@@ -8,16 +8,16 @@
 			"type": "BigDataPoolReference"
 		},
 		"sessionProperties": {
-			"driverMemory": "28g",
-			"driverCores": 4,
-			"executorMemory": "28g",
-			"executorCores": 4,
+			"driverMemory": "56g",
+			"driverCores": 8,
+			"executorMemory": "56g",
+			"executorCores": 8,
 			"numExecutors": 2,
 			"conf": {
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "499b8569-67c4-4c74-b7ec-a6977737caea"
+				"spark.autotune.trackingId": "0fedda98-241a-4a91-8ea7-50444901141f"
 			}
 		},
 		"metadata": {
@@ -60,7 +60,7 @@
 					"dataset_info = gdal.Info('/vsiadls/innosyn/raw/sample_4326.tif')  #/vsiadls/<container_name>/path/to/image\r\n",
 					"print(dataset_info)"
 				],
-				"execution_count": 10
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -104,23 +104,25 @@
 					"from osgeo import gdal\r\n",
 					"from notebookutils import mssparkutils\r\n",
 					"\r\n",
+					"mssparkutils.fs.unmount('/test')\r\n",
+					"\r\n",
+					"gdal.UseExceptions()\r\n",
+					"\r\n",
 					"mssparkutils.fs.mount( \r\n",
 					"\t\"abfss://innosyn@rawdatajbqezt.dfs.core.windows.net\", \r\n",
-					"\t\"/test2\", \r\n",
+					"\t\"/test\", \r\n",
 					"\t{\"linkedService\":\"innosyn_ajvt_linked_service\"} \r\n",
 					"  )\r\n",
 					"\r\n",
-					"#gdal.SetConfigOption('AZURE_STORAGE_ACCOUNT', 'rawdatajbqezt')\r\n",
-					"#gdal.SetConfigOption('AZURE_STORAGE_ACCESS_KEY', access_key)\r\n",
+					"gdal.SetConfigOption('AZURE_STORAGE_ACCOUNT', 'rawdatajbqezt')\r\n",
+					"gdal.SetConfigOption('AZURE_STORAGE_ACCESS_KEY', 'AHOTVR7kOK3lLcJV177VGv8WaPpTd7GfYdds2XFWD7gLDD89bIzAbMj47eeLWCS+igKPwum0Ip1lCVpEUdtIrA==')\r\n",
 					"\r\n",
 					"options = gdal.WarpOptions(options=['tr'], xRes=1000, yRes=1000)\r\n",
-					"gdal.Warp('dest_image.tif', '/vsiadls/innosyn/raw/sample_4326.tif', options=options)\r\n",
-					"\r\n",
+					"gdal.Warp('new_image.tif', '/vsiadls/innosyn/raw/m_3008719_sw_16_1_20110731.tif', options=options)\r\n",
 					"jobId = mssparkutils.env.getJobId()\r\n",
-					"\r\n",
-					"shutil.copy(\"dest_image.tif\", f\"/synfs/{jobId}/test2/dest_image.tif\")"
+					"shutil.copy(\"new_image.tif\", f\"/synfs/{jobId}/test/new_image.tif\")"
 				],
-				"execution_count": 13
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
