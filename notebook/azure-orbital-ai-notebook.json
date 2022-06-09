@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "a18490d9-d419-4ff9-b569-20483088a58b"
+				"spark.autotune.trackingId": "2f662cb9-f43e-4ed9-8a78-d74e190c83ef"
 			}
 		},
 		"metadata": {
@@ -117,12 +117,12 @@
 					"gdal.SetConfigOption('AZURE_STORAGE_ACCOUNT', 'rawdatajbqezt')\r\n",
 					"gdal.SetConfigOption('AZURE_STORAGE_ACCESS_KEY', 'AHOTVR7kOK3lLcJV177VGv8WaPpTd7GfYdds2XFWD7gLDD89bIzAbMj47eeLWCS+igKPwum0Ip1lCVpEUdtIrA==')\r\n",
 					"\r\n",
-					"options = gdal.WarpOptions(options=['tr'], xRes=1000, yRes=1000)\r\n",
-					"gdal.Warp('new_image.tif', '/vsiadls/innosyn/raw/m_3008719_sw_16_1_20110731.tif', options=options)\r\n",
+					"options = gdal.WarpOptions(options=['tr'])\r\n",
+					"gdal.Warp('ajvt_image.tif', '/vsiadls/innosyn/raw/sample_4326.tif', options=options)\r\n",
 					"jobId = mssparkutils.env.getJobId()\r\n",
-					"shutil.copy(\"new_image.tif\", f\"/synfs/{jobId}/test/new_image.tif\")"
+					"shutil.copy(\"ajvt_image.tif\", f\"/synfs/{jobId}/test/ajvt_image.tif\")"
 				],
-				"execution_count": 8
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
