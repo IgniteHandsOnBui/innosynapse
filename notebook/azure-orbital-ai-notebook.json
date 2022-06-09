@@ -1,5 +1,5 @@
 {
-	"name": "CheckInstalledPackage",
+	"name": "azure-orbital-ai-notebook",
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "0fedda98-241a-4a91-8ea7-50444901141f"
+				"spark.autotune.trackingId": "a18490d9-d419-4ff9-b569-20483088a58b"
 			}
 		},
 		"metadata": {
@@ -138,6 +138,7 @@
 					}
 				},
 				"source": [
+					"#Plot geotif image from blob storage container\r\n",
 					"import rasterio\r\n",
 					"from matplotlib import pyplot\r\n",
 					"src = rasterio.open(\"https://rawdatajbqezt.blob.core.windows.net/innosyn/raw/sample_4326.tif?sp=r&st=2022-06-07T13:45:32Z&se=2022-06-10T21:45:32Z&spr=https&sv=2020-08-04&sr=b&sig=K5Uf%2BMgKQwrIFhEChkNi0nk0CTbUT5cwG1jetJvkEoQ%3D\")\r\n",
