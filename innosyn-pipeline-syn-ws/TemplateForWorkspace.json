@@ -1199,6 +1199,29 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/innosyn_ajvt_linked_service')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('innosyn_ajvt_linked_service_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('innosyn_ajvt_linked_service_accountKey')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
 			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
 			"apiVersion": "2019-06-01-preview",
@@ -1260,7 +1283,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/CheckInstalledPackage')]",
+			"name": "[concat(parameters('workspaceName'), '/azure-orbital-ai-notebook')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
@@ -1271,16 +1294,16 @@
 					"type": "BigDataPoolReference"
 				},
 				"sessionProperties": {
-					"driverMemory": "28g",
-					"driverCores": 4,
-					"executorMemory": "28g",
-					"executorCores": 4,
+					"driverMemory": "56g",
+					"driverCores": 8,
+					"executorMemory": "56g",
+					"executorCores": 8,
 					"numExecutors": 2,
 					"conf": {
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "893ab420-fee1-44f0-bc19-6b462954714a"
+						"spark.autotune.trackingId": "458eb5e0-1bdc-4cae-bd24-48187e909d8a"
 					}
 				},
 				"metadata": {
@@ -1325,7 +1348,7 @@
 							"print(dataset_info)"
 						],
 						"outputs": [],
-						"execution_count": 10
+						"execution_count": null
 					},
 					{
 						"cell_type": "code",
@@ -1370,24 +1393,26 @@
 							"from osgeo import gdal\r\n",
 							"from notebookutils import mssparkutils\r\n",
 							"\r\n",
+							"mssparkutils.fs.unmount('/test')\r\n",
+							"\r\n",
+							"gdal.UseExceptions()\r\n",
+							"\r\n",
 							"mssparkutils.fs.mount( \r\n",
 							"\t\"abfss://innosyn@rawdatajbqezt.dfs.core.windows.net\", \r\n",
-							"\t\"/test2\", \r\n",
+							"\t\"/test\", \r\n",
 							"\t{\"linkedService\":\"innosyn_ajvt_linked_service\"} \r\n",
 							"  )\r\n",
 							"\r\n",
-							"#gdal.SetConfigOption('AZURE_STORAGE_ACCOUNT', 'rawdatajbqezt')\r\n",
-							"#gdal.SetConfigOption('AZURE_STORAGE_ACCESS_KEY', access_key)\r\n",
+							"gdal.SetConfigOption('AZURE_STORAGE_ACCOUNT', 'rawdatajbqezt')\r\n",
+							"gdal.SetConfigOption('AZURE_STORAGE_ACCESS_KEY', 'AHOTVR7kOK3lLcJV177VGv8WaPpTd7GfYdds2XFWD7gLDD89bIzAbMj47eeLWCS+igKPwum0Ip1lCVpEUdtIrA==')\r\n",
 							"\r\n",
 							"options = gdal.WarpOptions(options=['tr'], xRes=1000, yRes=1000)\r\n",
-							"gdal.Warp('dest_image.tif', '/vsiadls/innosyn/raw/sample_4326.tif', options=options)\r\n",
-							"\r\n",
+							"gdal.Warp('new_image.tif', '/vsiadls/innosyn/raw/m_3008719_sw_16_1_20110731.tif', options=options)\r\n",
 							"jobId = mssparkutils.env.getJobId()\r\n",
-							"\r\n",
-							"shutil.copy(\"dest_image.tif\", f\"/synfs/{jobId}/test2/dest_image.tif\")"
+							"shutil.copy(\"new_image.tif\", f\"/synfs/{jobId}/test/new_image.tif\")"
 						],
 						"outputs": [],
-						"execution_count": 13
+						"execution_count": 8
 					},
 					{
 						"cell_type": "code",
@@ -1403,6 +1428,7 @@
 							}
 						},
 						"source": [
+							"#Plot geotif image from blob storage container\r\n",
 							"import rasterio\r\n",
 							"from matplotlib import pyplot\r\n",
 							"src = rasterio.open(\"https://rawdatajbqezt.blob.core.windows.net/innosyn/raw/sample_4326.tif?sp=r&st=2022-06-07T13:45:32Z&se=2022-06-10T21:45:32Z&spr=https&sv=2020-08-04&sr=b&sig=K5Uf%2BMgKQwrIFhEChkNi0nk0CTbUT5cwG1jetJvkEoQ%3D\")\r\n",
@@ -1594,27 +1620,34 @@
 			"location": "southcentralus"
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/innosyn_ajvt_linked_service')]",
-			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"name": "[concat(parameters('workspaceName'), '/poolYLQS')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('innosyn_ajvt_linked_service_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('innosyn_ajvt_linked_service_accountKey')]"
-					}
+				"autoPause": {
+					"enabled": true,
+					"delayInMinutes": 15
 				},
-				"connectVia": {
-					"referenceName": "AutoResolveIntegrationRuntime",
-					"type": "IntegrationRuntimeReference"
-				}
+				"autoScale": {
+					"enabled": true,
+					"maxNodeCount": 10,
+					"minNodeCount": 3
+				},
+				"nodeCount": 10,
+				"nodeSize": "Medium",
+				"nodeSizeFamily": "MemoryOptimized",
+				"sparkVersion": "3.1",
+				"libraryRequirements": {
+					"content": "name: aoi-env\r\nchannels:\r\n  - defaults\r\ndependencies:\r\n  - azure-storage-file-datalake\r\n  - gdal=3.3.0\r\n  - libgdal\r\n  - pip>=20.1.1\r\n  - pyproj\r\n  - shapely\r\n  - pip:\r\n      - \"rasterio\"\r\n      - \"geopandas\"",
+					"filename": "environment.yml",
+					"time": "2022-06-08T16:08:46.0952706Z"
+				},
+				"isComputeIsolationEnabled": false,
+				"sessionLevelPackagesEnabled": true,
+				"annotations": []
 			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
-			]
+			"dependsOn": [],
+			"location": "southcentralus"
 		}
 	]
 }
