@@ -1303,7 +1303,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "458eb5e0-1bdc-4cae-bd24-48187e909d8a"
+						"spark.autotune.trackingId": "e90717ed-0979-4488-a5e9-f32af00117bf"
 					}
 				},
 				"metadata": {
@@ -1371,7 +1371,7 @@
 							"gdal.Translate(png_out, tiff_in, options=options)"
 						],
 						"outputs": [],
-						"execution_count": 11
+						"execution_count": 9
 					},
 					{
 						"cell_type": "code",
@@ -1402,17 +1402,17 @@
 							"\t\"/test\", \r\n",
 							"\t{\"linkedService\":\"innosyn_ajvt_linked_service\"} \r\n",
 							"  )\r\n",
-							"\r\n",
+							"access_key = TokenLibrary.getSecret('innosyn-pipeline-kv','GeospatialStorageAccountKey')\r\n",
 							"gdal.SetConfigOption('AZURE_STORAGE_ACCOUNT', 'rawdatajbqezt')\r\n",
-							"gdal.SetConfigOption('AZURE_STORAGE_ACCESS_KEY', 'AHOTVR7kOK3lLcJV177VGv8WaPpTd7GfYdds2XFWD7gLDD89bIzAbMj47eeLWCS+igKPwum0Ip1lCVpEUdtIrA==')\r\n",
+							"gdal.SetConfigOption('AZURE_STORAGE_ACCESS_KEY', access_key)\r\n",
 							"\r\n",
-							"options = gdal.WarpOptions(options=['tr'], xRes=1000, yRes=1000)\r\n",
-							"gdal.Warp('new_image.tif', '/vsiadls/innosyn/raw/m_3008719_sw_16_1_20110731.tif', options=options)\r\n",
+							"options = gdal.WarpOptions(options=['tr'])\r\n",
+							"gdal.Warp('ajvt_image.tif', '/vsiadls/innosyn/raw/sample_4326.tif', options=options)\r\n",
 							"jobId = mssparkutils.env.getJobId()\r\n",
-							"shutil.copy(\"new_image.tif\", f\"/synfs/{jobId}/test/new_image.tif\")"
+							"shutil.copy(\"ajvt_image.tif\", f\"/synfs/{jobId}/test/ajvt_image.tif\")"
 						],
 						"outputs": [],
-						"execution_count": 8
+						"execution_count": 10
 					},
 					{
 						"cell_type": "code",
@@ -1431,12 +1431,13 @@
 							"#Plot geotif image from blob storage container\r\n",
 							"import rasterio\r\n",
 							"from matplotlib import pyplot\r\n",
-							"src = rasterio.open(\"https://rawdatajbqezt.blob.core.windows.net/innosyn/raw/sample_4326.tif?sp=r&st=2022-06-07T13:45:32Z&se=2022-06-10T21:45:32Z&spr=https&sv=2020-08-04&sr=b&sig=K5Uf%2BMgKQwrIFhEChkNi0nk0CTbUT5cwG1jetJvkEoQ%3D\")\r\n",
+							"img_path = 'https://rawdatajbqezt.blob.core.windows.net/innosyn/raw/Manufacturing_ElSegundo_LSFO_SNR5H2S.tif?sp=r&st=2022-06-14T13:50:50Z&se=2022-06-17T21:50:50Z&spr=https&sv=2021-06-08&sr=b&sig=XInwNf3pYSrmhMovMbPbk8G9tVQ9KzzwO3cbBhKCwMo%3D'\r\n",
+							"src = rasterio.open(img_path)\r\n",
 							"pyplot.imshow(src.read(1), cmap='pink')\r\n",
 							"pyplot.show()"
 						],
 						"outputs": [],
-						"execution_count": 3
+						"execution_count": 11
 					},
 					{
 						"cell_type": "code",
