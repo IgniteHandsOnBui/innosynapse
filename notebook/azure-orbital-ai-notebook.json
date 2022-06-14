@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "6c8e262d-5034-4c4a-a123-41788049c703"
+				"spark.autotune.trackingId": "c2a7d701-fd0c-4113-9960-517086a01f9b"
 			}
 		},
 		"metadata": {
@@ -82,7 +82,7 @@
 					"options = gdal.TranslateOptions(format='PNG')\r\n",
 					"gdal.Translate(png_out, tiff_in, options=options)"
 				],
-				"execution_count": 2
+				"execution_count": 9
 			},
 			{
 				"cell_type": "code",
@@ -122,7 +122,7 @@
 					"jobId = mssparkutils.env.getJobId()\r\n",
 					"shutil.copy(\"ajvt_image.tif\", f\"/synfs/{jobId}/test/ajvt_image.tif\")"
 				],
-				"execution_count": 3
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
@@ -141,11 +141,12 @@
 					"#Plot geotif image from blob storage container\r\n",
 					"import rasterio\r\n",
 					"from matplotlib import pyplot\r\n",
-					"src = rasterio.open(\"https://rawdatajbqezt.blob.core.windows.net/innosyn/raw/Manufacturing_ElSegundo_LSFO_SNR5H2S.tif?sp=r&st=2022-06-14T13:50:50Z&se=2022-06-17T21:50:50Z&spr=https&sv=2021-06-08&sr=b&sig=XInwNf3pYSrmhMovMbPbk8G9tVQ9KzzwO3cbBhKCwMo%3D\")\r\n",
+					"img_path = 'https://rawdatajbqezt.blob.core.windows.net/innosyn/raw/Manufacturing_ElSegundo_LSFO_SNR5H2S.tif?sp=r&st=2022-06-14T13:50:50Z&se=2022-06-17T21:50:50Z&spr=https&sv=2021-06-08&sr=b&sig=XInwNf3pYSrmhMovMbPbk8G9tVQ9KzzwO3cbBhKCwMo%3D'\r\n",
+					"src = rasterio.open(img_path)\r\n",
 					"pyplot.imshow(src.read(1), cmap='pink')\r\n",
 					"pyplot.show()"
 				],
-				"execution_count": 6
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
